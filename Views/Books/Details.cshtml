@@ -1,0 +1,32 @@
+﻿@model ManagementBook.Models.Book
+@{
+    ViewData["Title"] = "Chi tiết sách";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3>@Model.Title</h3>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Tác giả</dt>
+            <dd class="col-sm-9">@Model.Author.Name</dd>
+
+            <dt class="col-sm-3">Thể loại</dt>
+            <dd class="col-sm-9">@Model.Category.Name</dd>
+
+            <dt class="col-sm-3">Mô tả</dt>
+            <dd class="col-sm-9">@Model.Description</dd>
+
+            <dt class="col-sm-3">Giá</dt>
+            <dd class="col-sm-9">@Model.Price.ToString("N0") đ</dd>
+
+            <dt class="col-sm-3">Số lượng</dt>
+            <dd class="col-sm-9">@Model.StockQuantity</dd>
+        </dl>
+    </div>
+    <div class="card-footer">
+        <a asp-action="Edit" asp-route-id="@Model.BookId" class="btn btn-primary">Sửa</a>
+        <a asp-action="Index" asp-controller="Dashboard" class="btn btn-secondary">Quay lại</a>
+    </div>
+</div>

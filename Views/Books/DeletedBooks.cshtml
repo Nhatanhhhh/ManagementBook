@@ -1,0 +1,35 @@
+﻿@model IEnumerable<ManagementBook.Models.Book>
+@{
+    ViewData["Title"] = "Sách đã xóa";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Tên sách</th>
+            <th>Tác giả</th>
+            <th>Người xóa</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="table-danger">
+                <td>@item.Title</td>
+                <td>@item.Author.Name</td>
+                <td>@item.DeletedBy</td>
+                <td>
+                    <form asp-action="Restore" method="post" class="d-inline">
+                        <input type="hidden" name="id" value="@item.BookId" />
+                        <button type="submit" class="btn btn-warning btn-sm">Khôi phục</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" asp-controller="Dashboard" class="btn btn-secondary">Quay lại Dashboard</a>

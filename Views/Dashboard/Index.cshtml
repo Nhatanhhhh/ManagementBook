@@ -1,0 +1,108 @@
+@model IEnumerable<ManagementBook.Models.Book>
+@{
+    ViewData["Title"] = "Dashboard";
+    bool isAdmin = ViewBag.IsAdmin ?? false;
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (User.IsInRole("Admin"))
+{
+    <p>
+        <a asp-action="Create" asp-controller="Books" class="btn btn-primary">Thêm sách mới</a>
+    </p>
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header @(User.IsInRole("Admin") ? "bg-primary" : "bg-info") text-white">
+                <h5 class="mb-0">Thống kê sách</h5>
+            </div>
+            <div class="card-body">
+                <p>Tổng số sách: @Model.Count()</p>
+                @if (User.IsInRole("Admin"))
+                {
+                    <p>Sách đã xóa: @Model.Count(b => b.IsDeleted)</p>
+                    <p>Sách không hiển thị: @Model.Count(b => !b.IsActive)</p>
+                }
+                <p>Sách sắp hết hàng: @Model.Count(b => b.StockQuantity < 5)</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h3 class="mt-4">Danh sách sách</h3>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Tên sách</th>
+            <th>Tác giả</th>
+            <th>Thể loại</th>
+            <th>Giá</th>
+            <th>Tồn kho</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="@(item.IsDeleted ? "table-danger" : (!item.IsActive ? "table-warning" : ""))">
+                <td>@item.Title</td>
+                <td>@item.Author.Name</td>
+                <td>@item.Category.Name</td>
+                <td>@item.Price</td>
+                <td>@item.StockQuantity</td>
+                <td>
+                    @if (item.IsDeleted)
+                    {
+                        <span class="badge bg-danger">Đã xóa</span>
+                    }
+                    else if (!item.IsActive)
+                    {
+                        <span class="badge bg-warning text-dark">Không hiển thị</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Hoạt động</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-controller="Books" asp-route-id="@item.BookId"
+                       class="btn btn-info btn-sm">Chi tiết</a>
+
+                    @if (!item.IsDeleted)
+                    {
+                        <!-- Nút Sửa -->
+                        @if (isAdmin)
+                        {
+                            <a asp-action="Edit" asp-controller="Books" asp-route-id="@item.BookId"
+                               class="btn btn-secondary btn-sm">Sửa</a>
+                        }
+
+                        <!-- Nút Xóa -->
+                        <form asp-action="Delete" asp-controller="Books" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@item.BookId" />
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Bạn có chắc muốn xóa sách này?')">
+                                Xóa
+                            </button>
+                        </form>
+                    }
+                    else if (isAdmin)
+                    {
+                        <!-- Nút Khôi phục cho Admin -->
+                        <form asp-action="Restore" asp-controller="Books" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@item.BookId" />
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-warning btn-sm">Khôi phục</button>
+                        </form>
+                        <span class="text-muted">| Đã xóa bởi: @item.DeletedBy</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

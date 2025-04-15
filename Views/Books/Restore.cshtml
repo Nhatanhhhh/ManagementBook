@@ -1,0 +1,35 @@
+@model ManagementBook.Models.Book
+@{
+    ViewData["Title"] = "Khôi phục sách";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<h3>Bạn có muốn khôi phục sách này?</h3>
+<div class="card">
+    <div class="card-header">
+        <h4>@Model.Title</h4>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Tác giả</dt>
+            <dd class="col-sm-9">@Model.Author.Name</dd>
+
+            <dt class="col-sm-3">Thể loại</dt>
+            <dd class="col-sm-9">@Model.Category.Name</dd>
+
+            <dt class="col-sm-3">Giá</dt>
+            <dd class="col-sm-9">@Model.Price</dd>
+
+            <dt class="col-sm-3">Tồn kho</dt>
+            <dd class="col-sm-9">@Model.StockQuantity</dd>
+        </dl>
+    </div>
+    <div class="card-footer">
+        <form asp-action="RestoreConfirmed" asp-controller="Books" method="post" class="d-inline">
+            <input type="hidden" asp-for="BookId" />
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-warning btn-sm">Khôi phục</button>
+        </form>
+    </div>
+</div>
